@@ -28,10 +28,16 @@ class AppRoutes
 
         if @route[key][:s] then
           raw_params = @route[key][:s].gsub(':','').match(key).captures
-          @params.merge!(Hash[raw_params.map(&:to_sym).zip(args)])
+          splat, raw_params2 = raw_params.each_with_index.partition {|x,i| x == '/*'}
+          @params[:splat] = splat.map {|x,i| v = args[i]; args.delete_at(i); v}
+          @params.merge!(Hash[raw_params2.map{|x,i| x.to_sym}.zip(args)])
         end 
 
-        result = @route[key][:block].call *args
+        begin
+          result = @route[key][:block].call *args
+        rescue
+          "app-routes error: " + ($!).to_s
+        end
 
         break
       end
@@ -45,8 +51,10 @@ class AppRoutes
     send (methodx[arg.class.to_s.to_sym]), arg, &block 
   end
 
+  private
+
   def string_get(raw_s, &block)
-    s = raw_s.gsub(/\:\w+/,'(\w+)')
+    s = "^%s$" % raw_s.gsub(/\:[\w-]+/,'([\w-]+)').gsub(/\/\*/,'(.*)')
     @route[Regexp.new s] = {s: raw_s, block: block}
   end
 
