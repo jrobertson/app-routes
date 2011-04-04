@@ -1,15 +1,20 @@
-#!/usr/bin/env ruby
+#!/usr/bin/ruby
 
 # file: app-routes.rb
 
-module AppRoutes
+class AppRoutes
 
-  def initialize()
+  def initialize(params={})
+    super()
     @route = {}
-    @params = {}
+    @params = params
   end
-  
-  def run_route(request)
+
+  def routes()
+    yield
+  end
+
+  def run(request)
 
     result = nil
 
@@ -17,6 +22,7 @@ module AppRoutes
       match = request.match(key)
 
       if match then
+
         args = match.captures
         @params[:captures] = *args
 
@@ -29,10 +35,7 @@ module AppRoutes
 
         begin
           result = @route[key][:block].call *args
-        rescue Exception => e  
-
-          err_label = e.message + " :: \n" + e.backtrace.join("\n")      
-          puts err_label      
+        rescue
           "app-routes error: " + ($!).to_s
         end
 
