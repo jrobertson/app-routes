@@ -13,10 +13,10 @@ module AppRoutes
 
     result = nil
 
-    route = @route.detect {|key, block| request.match(key) }
+    route = @route.detect {|key, block|  request.match(key) }
     
     if route then
-      key, block = route
+      key, block = route      
       match = request.match(key)
 
       args = match.captures
@@ -47,6 +47,7 @@ module AppRoutes
     send (methodx[arg.class.to_s.to_sym]), arg, &block 
   end
 
+  alias add_route get
   private
 
   def string_get(raw_s, &block)

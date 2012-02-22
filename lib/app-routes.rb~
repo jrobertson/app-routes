@@ -13,33 +13,32 @@ module AppRoutes
 
     result = nil
 
-    @route.each do |key, block|
+    route = @route.detect {|key, block| request.match(key) }
+    
+    if route then
+      key, block = route
       match = request.match(key)
 
-      if match then
-        args = match.captures
-        @params[:captures] = *args
+      args = match.captures
+      @params[:captures] = *args
 
-        if @route[key][:s] then
-          raw_params = @route[key][:s].gsub(':','').match(key).captures
-          splat, raw_params2 = raw_params.each_with_index.partition {|x,i| x == '/*'}
-          @params[:splat] = splat.map {|x,i| v = args[i]; args.delete_at(i); v}
-          @params.merge!(Hash[raw_params2.map{|x,i| x.to_sym}.zip(args)])
-        end 
+      if @route[key][:s] then
+        raw_params = @route[key][:s].gsub(':','').match(key).captures
+        splat, raw_params2 = raw_params.each_with_index.partition {|x,i| x == '/*'}
+        @params[:splat] = splat.map {|x,i| v = args[i]; args.delete_at(i); v}
+        @params.merge!(Hash[raw_params2.map{|x,i| x.to_sym}.zip(args)])
+      end 
 
-        begin
-          result = @route[key][:block].call *args
-        rescue Exception => e  
+      begin
+        result = @route[key][:block].call *args
+      rescue Exception => e  
 
-          err_label = e.message + " :: \n" + e.backtrace.join("\n")      
-          puts err_label      
-          "app-routes error: " + ($!).to_s
-        end
-
-        break
+        err_label = e.message + " :: \n" + e.backtrace.join("\n")      
+        puts err_label      
+        "app-routes error: " + ($!).to_s
       end
+
     end
-    
     result
   end
 
