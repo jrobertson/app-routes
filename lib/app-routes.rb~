@@ -37,7 +37,9 @@ module AppRoutes
         puts err_label      
         "app-routes error: " + ($!).to_s
       end
-
+      
+      @params = {}
+      
     end
     result
   end
@@ -47,7 +49,10 @@ module AppRoutes
     send (methodx[arg.class.to_s.to_sym]), arg, &block 
   end
 
-  alias add_route get
+  def add_route(arg)
+    get(arg) {yield(@params)}
+  end
+  
   private
 
   def string_get(raw_s, &block)

@@ -36,9 +36,7 @@ module AppRoutes
         err_label = e.message + " :: \n" + e.backtrace.join("\n")      
         puts err_label      
         "app-routes error: " + ($!).to_s
-      end
-      
-      @params = {}
+      end      
       
     end
     result
