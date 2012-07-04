@@ -2,16 +2,13 @@
 
 # file: app-routes.rb
 
-require 'logger'
-
 module AppRoutes
 
   attr_accessor :routes
   
-  def initialize(logfile='/tmp/app-routes.log')
+  def initialize()
     @routes = {}
     @params = {}
-    @logger = Logger.new(logfile,'daily')
   end
   
   def run_route(request)
@@ -41,8 +38,6 @@ module AppRoutes
       rescue Exception => e  
 
         err_label = e.message + " :: \n" + e.backtrace.join("\n")      
-        @logger.debug err_label      
-        @logger.debug "app-routes error: " + ($!).to_s
       end      
       
     end
