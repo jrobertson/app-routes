@@ -6,7 +6,7 @@ module AppRoutes
 
   attr_accessor :routes
   
-  def initialize()
+  def initialize(logfile='/tmp/app-routes.log')
     @routes = {}
     @params = {}
   end
@@ -16,7 +16,9 @@ module AppRoutes
     result = nil
 
     routes = @routes
+
     return unless routes
+
     route = routes.detect {|key, block|  request.match(key) }
     
     if route then
@@ -28,8 +30,10 @@ module AppRoutes
 
       if routes[key][:s] then
         raw_params = routes[key][:s].gsub(':','').match(key).captures
+
         splat, raw_params2 = raw_params.each_with_index.partition {|x,i| x == '/*'}
         @params[:splat] = splat.map {|x,i| v = args[i]; args.delete_at(i); v}
+
         @params.merge!(Hash[raw_params2.map{|x,i| x.to_sym}.zip(args)])
       end 
 
@@ -38,6 +42,7 @@ module AppRoutes
       rescue Exception => e  
 
         err_label = e.message + " :: \n" + e.backtrace.join("\n")      
+        raise 'app-routes: ' + request.inspect + ' ' + err_label
       end      
       
     end
