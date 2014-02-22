@@ -5,7 +5,7 @@
 
 module AppRoutes
 
-  attr_accessor :routes
+  attr_accessor :get_routes, :post_routes
   
   def initialize(logfile='/tmp/app-routes.log')
     @get_routes, @post_routes = {}, {}
