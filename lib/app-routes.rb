@@ -71,7 +71,7 @@ module AppRoutes
   private
 
   def string_get(raw_s, &block)
-    s = "^%s$" % raw_s.gsub(/\:[\w-]+/,'([\w-]+)').gsub(/\/\*/,'(.*)')
+    s = "^%s$" % raw_s.gsub(/\:[\w-]+/,'([\w\-\.]+)').gsub(/\/\*/,'(.*)')
     @get_routes[Regexp.new s] = {s: raw_s, block: block}
   end
 
@@ -80,7 +80,7 @@ module AppRoutes
   end
 
   def string_post(raw_s, &block)
-    s = "^%s$" % raw_s.gsub(/\:[\w-]+/,'([\w-]+)').gsub(/\/\*/,'(.*)')
+    s = "^%s$" % raw_s.gsub(/\:[\w-]+/,'([\w\-\.]+)').gsub(/\/\*/,'(.*)')
     @post_routes[Regexp.new s] = {s: raw_s, block: block}
   end
 
